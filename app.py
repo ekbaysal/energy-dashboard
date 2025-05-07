@@ -3,7 +3,7 @@
 
 # In[4]:
 
-import os
+
 import pandas as pd
 import numpy as np
 
@@ -17,8 +17,8 @@ from dash import html, dcc, Input, Output
 import plotly.express as px
 
 # 1) LOAD & PREPROCESS
-energy_df = pd.read_csv('energy_dataset.csv')
-weather_df = pd.read_csv('weather_features.csv')
+energy_df = pd.read_csv('energy_dataset.csv', nrows=5000)
+weather_df = pd.read_csv('weather_features.csv', nrows=5000)
 
 energy_df['time']   = pd.to_datetime(energy_df['time'], utc=True)
 weather_df['dt_iso']= pd.to_datetime(weather_df['dt_iso'], utc=True)
@@ -109,18 +109,7 @@ def update_figure(chosen):
     return fig
 
 if __name__ == '__main__':
-    # Grab Render’s port (or default to 8050 locally)
-    port = int(os.environ.get("PORT", 8050))
-    print(f"Starting Dash on 0.0.0.0:{port}", flush=True)
-    # Turn off the reloader so we only start one process
-    app.run_server(
-        host='0.0.0.0',
-        port=port,
-        debug=False,
-        use_reloader=False
-    )
-
-
+    app.run(debug=True)
 
 
 
