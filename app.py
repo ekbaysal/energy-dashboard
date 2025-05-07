@@ -17,8 +17,8 @@ from dash import html, dcc, Input, Output
 import plotly.express as px
 
 # 1) LOAD & PREPROCESS
-energy_df = pd.read_csv('energy_dataset.csv.zip')
-weather_df = pd.read_csv('weather_features.csv.zip')
+energy_df = pd.read_csv('energy_dataset.csv')
+weather_df = pd.read_csv('weather_features.csv')
 
 energy_df['time']   = pd.to_datetime(energy_df['time'], utc=True)
 weather_df['dt_iso']= pd.to_datetime(weather_df['dt_iso'], utc=True)
