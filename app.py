@@ -109,8 +109,14 @@ def update_figure(chosen):
     return fig
 
 if __name__ == '__main__':
+    # Grab the PORT Render assigns (default 10000), or fall back to 8050 locally
     port = int(os.environ.get("PORT", 8050))
-    app.run_server(debug=False, host="0.0.0.0", port=port)
+    app.run_server(
+        host="0.0.0.0",
+        port=port,
+        debug=False
+    )
+
 
 
 
