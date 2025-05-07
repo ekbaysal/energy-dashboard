@@ -109,12 +109,15 @@ def update_figure(chosen):
     return fig
 
 if __name__ == '__main__':
-    # Grab the PORT Render assigns (default 10000), or fall back to 8050 locally
+    # Grab Render’s port (or default to 8050 locally)
     port = int(os.environ.get("PORT", 8050))
+    print(f"Starting Dash on 0.0.0.0:{port}", flush=True)
+    # Turn off the reloader so we only start one process
     app.run_server(
-        host="0.0.0.0",
+        host='0.0.0.0',
         port=port,
-        debug=False
+        debug=False,
+        use_reloader=False
     )
 
 
