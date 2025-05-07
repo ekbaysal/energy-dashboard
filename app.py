@@ -1,9 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: utf-8
 
-# In[4]:
-
-
+import os
 import pandas as pd
 import numpy as np
 
@@ -12,21 +10,25 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
 # Dash & Plotly for the dashboard
-import dash
-from dash import html, dcc, Input, Output
+from dash import Dash, html, dcc, Input, Output
 import plotly.express as px
 
-# 1) LOAD & PREPROCESS
-energy_df = pd.read_csv('energy_dataset.csv', nrows=5000)
+# 1) LOAD & PREPROCESS (sample first 5k rows)
+energy_df  = pd.read_csv('energy_dataset.csv', nrows=5000)
 weather_df = pd.read_csv('weather_features.csv', nrows=5000)
 
-energy_df['time']   = pd.to_datetime(energy_df['time'], utc=True)
-weather_df['dt_iso']= pd.to_datetime(weather_df['dt_iso'], utc=True)
+energy_df['time']    = pd.to_datetime(energy_df['time'], utc=True)
+weather_df['dt_iso'] = pd.to_datetime(weather_df['dt_iso'], utc=True)
 
-weather_numeric = weather_df.drop(columns=['city_name','weather_main','weather_description','weather_icon'])
-weather_avg     = weather_numeric.groupby('dt_iso').mean().reset_index()
+weather_numeric = weather_df.drop(columns=[
+    'city_name','weather_main','weather_description','weather_icon'
+])
+weather_avg = weather_numeric.groupby('dt_iso').mean().reset_index()
 
-df = pd.merge(energy_df, weather_avg, left_on='time', right_on='dt_iso', how='inner')
+df = pd.merge(
+    energy_df, weather_avg,
+    left_on='time', right_on='dt_iso', how='inner'
+)
 
 needed = [
     'forecast solar day ahead','forecast wind onshore day ahead',
@@ -40,8 +42,8 @@ df['hour']      = df['time'].dt.hour
 df['dayofweek'] = df['time'].dt.dayofweek
 
 # lag features
-df['price_lag1']      = df['price actual'].shift(1)
-df['load_lag1']       = df['total load actual'].shift(1)
+df['price_lag1'] = df['price actual'].shift(1)
+df['load_lag1']  = df['total load actual'].shift(1)
 df = df.dropna(subset=['price_lag1','load_lag1'])
 
 # split X/y
@@ -69,7 +71,8 @@ test_df['pred']   = model.predict(X_test)
 test_df['time']   = df.loc[y_test.index, 'time']
 
 # 3) DASH SETUP
-app = dash.Dash(__name__)
+app    = Dash(__name__)
+server = app.server
 app.title = "Energy Price Dashboard"
 
 app.layout = html.Div([
@@ -109,11 +112,14 @@ def update_figure(chosen):
     return fig
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8050))
+    app.run_server(
+        host='0.0.0.0',
+        port=port,
+        debug=False,
+        use_reloader=False
+    )
 
-
-
-# In[ ]:
 
 
 
